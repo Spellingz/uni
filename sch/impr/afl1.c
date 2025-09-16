@@ -4,7 +4,6 @@ int main(void)
 {
   // DEFINE VARS
   int sec, min, hour, day, week;
- // double min, hour, day, week;
   
   // Main
   scanf("%d", &sec);
@@ -18,7 +17,7 @@ int main(void)
   week = day/7 - day%1;
   day = day%7;
 
-  printf("sec: %d, min: %d, hour: %d, day: %d, week: %d", sec, min, hour, day, week);
+  printf("week: %d, day: %d, hour: %d, min: %d, sec: %d", week, day, hour, min, sec);
 
   return 0;
 }
