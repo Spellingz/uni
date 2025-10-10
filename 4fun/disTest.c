@@ -8,13 +8,12 @@
 
 // CUSTOM DEFINED VARIABLES
 #define ARR_LENGTH(x) (sizeof(x) / sizeof((x)[0]))
-#define ARR_SIZE 50
+#define ARR_SIZE 500
 //
 // MAIN VARIABLES:
 //
 int disArr[ARR_SIZE][ARR_SIZE];
 int nextArr[ARR_SIZE][ARR_SIZE];
-int settledArr[ARR_SIZE][ARR_SIZE];
 
 // CUSTOM STRUCT / FUNCTIONS
 typedef struct Point
@@ -43,14 +42,12 @@ void* checkGravity(void* arg)
 {
   while (!WindowShouldClose()) 
   {
-
-  start_while:
-    usleep(25000);
+    usleep(2000);
     // CHECK GRAVITY
     for (int i = 0; i < ARR_SIZE; i++)
       for (int j = 0; j < ARR_SIZE-1; j++)
       {
-        if (disArr[i][j] == 1 && settledArr[i][j] != 2)
+        if (disArr[i][j] == 1)
         {
           // STRAIGHT GRAVITY
           if (checkSpot(i, j+1))
@@ -58,11 +55,10 @@ void* checkGravity(void* arg)
             disArr[i][j] = 0;
             nextArr[i][j] = 0;
             nextArr[i][j+1] = 1;
-            settledArr[i][j] = 0;
           }
           else if (i > 0 && i < ARR_SIZE-1)
           {
-            if (checkSpot(i+1, j+1) && checkSpot(i-1, j+1))
+            if (checkSpot(i+1, j+1) && checkSpot(i-1, j+1))// CHECK SIDE GRAVITY
             {
               disArr[i][j] = 0;
               nextArr[i][j] = 0;
@@ -70,26 +66,19 @@ void* checkGravity(void* arg)
                 nextArr[i+1][j+1] = 1;
               else
                 nextArr[i-1][j+1] = 1;
-              settledArr[i][j] = 0;
             }
-            else if (checkSpot(i+1, j+1))// CHECK SIDE GRAVITY
+            else if (checkSpot(i+1, j+1))
             {
               disArr[i][j] = 0;
               nextArr[i][j] = 0;
               nextArr[i+1][j+1] = 1;
-              settledArr[i][j] = 0;
             }
             else if (checkSpot(i-1, j+1))
             {
               disArr[i][j] = 0;
               nextArr[i][j] = 0;
               nextArr[i-1][j+1] = 1;
-              settledArr[i][j] = 0;
             }
-          }
-          else
-          {
-            settledArr[i][j]++;
           }
         }
       }
@@ -160,7 +149,7 @@ int main(void)
           Rect tempRect = (Rect)
           {
             { (renderWidth/ARR_SIZE)*i, (renderHeight/ARR_SIZE)*j},
-            { (renderWidth/ARR_SIZE)*(i+1), (renderHeight/ARR_SIZE)*(j+1) },
+            { (renderWidth/ARR_SIZE)*(i+50), (renderHeight/ARR_SIZE)*(j+50) },
           };
           if (mouse.x >= tempRect.p1.x && mouse.x < tempRect.p2.x && mouse.y >= tempRect.p1.y && mouse.y < tempRect.p2.y)
           {
