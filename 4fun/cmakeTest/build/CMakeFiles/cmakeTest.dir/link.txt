@@ -1,0 +1,1 @@
+/usr/sbin/cc -Wl,--dependency-file=CMakeFiles/cmakeTest.dir/link.d CMakeFiles/cmakeTest.dir/main.c.o -o cmakeTest  mylib/libmylib.a

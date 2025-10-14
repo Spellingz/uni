@@ -1,4 +1,4 @@
-#include <raylib.h>
+#include "raylib.h"
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -8,12 +8,13 @@
 
 // CUSTOM DEFINED VARIABLES
 #define ARR_LENGTH(x) (sizeof(x) / sizeof((x)[0]))
-#define ARR_SIZE 500
+#define ARR_SIZE 300
 //
 // MAIN VARIABLES:
 //
 int disArr[ARR_SIZE][ARR_SIZE];
 int nextArr[ARR_SIZE][ARR_SIZE];
+int settledArr[ARR_SIZE][ARR_SIZE];
 
 // CUSTOM STRUCT / FUNCTIONS
 typedef struct Point
@@ -38,50 +39,59 @@ bool checkSpot(int i, int j)
   return true;
 }
 
+void updateCell(int i, int j)
+{
+  if (disArr[i][j] == 1)
+  {
+    // STRAIGHT GRAVITY
+    if (checkSpot(i, j+1))
+    {
+      disArr[i][j] = 0;
+      nextArr[i][j] = 0;
+      nextArr[i][j+1] = 1;
+      settledArr[i][j] = 0;
+    }
+    else if (i > 0 && i < ARR_SIZE-1)
+    {
+      if (checkSpot(i+1, j+1) || checkSpot(i-1, j+1))
+      {
+        bool both = false;
+        if (checkSpot(i+1, j+1) && checkSpot(i-1, j+1))
+          both = true;
+        disArr[i][j] = 0;
+        nextArr[i][j] = 0;
+        settledArr[i][j] = 0;
+        int x = (rand() % 2)? 1 : -1;
+        if (both)
+          nextArr[i+x][j+1] = 1;
+        else if (checkSpot(i+1, j+1))
+          nextArr[i+1][j+1] = 1;
+        else if (checkSpot(i-1, j+1))
+          nextArr[i-1][j+1] = 1;
+      }
+    }
+    else
+      settledArr[i][j]++;
+  }
+}
+
 void* checkGravity(void* arg)
 {
+  srand(time(NULL));
   while (!WindowShouldClose()) 
   {
-    usleep(2000);
-    // CHECK GRAVITY
-    for (int i = 0; i < ARR_SIZE; i++)
-      for (int j = 0; j < ARR_SIZE-1; j++)
-      {
-        if (disArr[i][j] == 1)
-        {
-          // STRAIGHT GRAVITY
-          if (checkSpot(i, j+1))
-          {
-            disArr[i][j] = 0;
-            nextArr[i][j] = 0;
-            nextArr[i][j+1] = 1;
-          }
-          else if (i > 0 && i < ARR_SIZE-1)
-          {
-            if (checkSpot(i+1, j+1) && checkSpot(i-1, j+1))// CHECK SIDE GRAVITY
-            {
-              disArr[i][j] = 0;
-              nextArr[i][j] = 0;
-              if (rand() & 1)
-                nextArr[i+1][j+1] = 1;
-              else
-                nextArr[i-1][j+1] = 1;
-            }
-            else if (checkSpot(i+1, j+1))
-            {
-              disArr[i][j] = 0;
-              nextArr[i][j] = 0;
-              nextArr[i+1][j+1] = 1;
-            }
-            else if (checkSpot(i-1, j+1))
-            {
-              disArr[i][j] = 0;
-              nextArr[i][j] = 0;
-              nextArr[i-1][j+1] = 1;
-            }
-          }
-        }
-      }
+    usleep(2500);
+    bool leftRight = rand() % 2;
+
+    if (leftRight)
+      for (int i = ARR_SIZE-1; i > 0; i--)
+        for (int j = ARR_SIZE-2; j > 0; j--)
+          updateCell(i, j);
+    else
+      for (int i = 0; i < ARR_SIZE; i++)
+        for (int j = ARR_SIZE-2; j > 0; j--)
+          updateCell(i, j);
+
     memcpy(disArr, nextArr, sizeof(disArr));
   }
   return NULL;
@@ -149,7 +159,7 @@ int main(void)
           Rect tempRect = (Rect)
           {
             { (renderWidth/ARR_SIZE)*i, (renderHeight/ARR_SIZE)*j},
-            { (renderWidth/ARR_SIZE)*(i+50), (renderHeight/ARR_SIZE)*(j+50) },
+            { (renderWidth/ARR_SIZE)*(i+20), (renderHeight/ARR_SIZE)*(j+20) },
           };
           if (mouse.x >= tempRect.p1.x && mouse.x < tempRect.p2.x && mouse.y >= tempRect.p1.y && mouse.y < tempRect.p2.y)
           {
@@ -164,30 +174,21 @@ int main(void)
     
     // RENDER SECTION
     BeginDrawing();
-    ClearBackground(BLACK);
+    ClearBackground(WHITE);
 
     for (int i = 0; i < ARR_SIZE; i++)
     {
       for (int j = 0; j < ARR_SIZE; j++)
       {
+        if (disArr[i][j] != 1) continue;
+
         Rect tempRect = (Rect)
         {
           { (renderWidth/ARR_SIZE)*i, (renderHeight/ARR_SIZE)*j},
           { (renderWidth/ARR_SIZE)*(i+1), (renderHeight/ARR_SIZE)*(j+1) },
         };
 
-        switch(disArr[i][j])
-        {
-          case 0:
-            drawPointRect(tempRect.p1, tempRect.p2, WHITE);
-            break;
-          case 1:
-            drawPointRect(tempRect.p1, tempRect.p2, BLACK);
-            break;
-          default:
-            drawPointRect(tempRect.p1, tempRect.p2, PINK);
-            break;
-        }
+        drawPointRect(tempRect.p1, tempRect.p2, BLACK);
 
 
         // DRAW CHECKERED PATTERN

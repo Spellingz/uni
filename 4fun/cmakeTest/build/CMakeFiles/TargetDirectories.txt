@@ -1,0 +1,6 @@
+/home/kianh/ws/4fun/cmakeTest/build/CMakeFiles/cmakeTest.dir
+/home/kianh/ws/4fun/cmakeTest/build/CMakeFiles/edit_cache.dir
+/home/kianh/ws/4fun/cmakeTest/build/CMakeFiles/rebuild_cache.dir
+/home/kianh/ws/4fun/cmakeTest/build/mylib/CMakeFiles/mylib.dir
+/home/kianh/ws/4fun/cmakeTest/build/mylib/CMakeFiles/edit_cache.dir
+/home/kianh/ws/4fun/cmakeTest/build/mylib/CMakeFiles/rebuild_cache.dir
