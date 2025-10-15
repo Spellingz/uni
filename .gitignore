@@ -1,0 +1,7 @@
+# file extension ignores
+*.o
+*.out
+
+
+# build dirs
+build/
